@@ -130,7 +130,7 @@ class ClientShell(object):
         for key, values in getattr(self, 'all_osp_cmd_groups').items():
             func_dict = dict()
             for v in values:
-                #https://stackoverflow.com/questions/13184281/python-dynamic-function-creation-with-custom-names
+                # https://stackoverflow.com/questions/13184281/python-dynamic-function-creation-with-custom-names
                 #
                 def func1(*args, **kwargs):
                     self.logger.debug(args[1])
@@ -139,7 +139,9 @@ class ClientShell(object):
                 cmd = Command(func1)
                 func_dict.update({v: cmd})
 
-            proxy_class = type('%sMixin' % "".join([word.capitalize() for word in key.split('_')]), (object,), func_dict)
+            proxy_class = type('%sMixin' % "".join([word.capitalize() for word in key.split('_')]),
+                               (object,),
+                               func_dict)
             self.logger.info(key.lower())
             setattr(self, '%s' % key.lower(), proxy_class())
 

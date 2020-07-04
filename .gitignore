@@ -1,0 +1,29 @@
+# compiled files
+__pycache__
+*.py[cod]
+
+# packaging
+dist
+build
+*.egg-info
+
+# docs
+docs/_build
+docs/.examples
+
+# unit tests
+.tox
+coverage
+tests/.cache
+tests/.coverage
+
+# pycharm project settings
+.idea/
+ospclientsdk.iml
+
+# visual studio code project settings
+.vscode/
+
+# eclipse project settings
+.project
+.pydevproject

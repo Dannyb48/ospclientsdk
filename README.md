@@ -5,7 +5,7 @@ subprocess code.
 ## Installation
 
 Ospclientsdk can be easily installed with a one line command. It is recommended (as best practice) to create a virtual
-environment and install blaster. Please see the commands below to install. Note this is only supported
+environment and install ospclientsdk. Please see the commands below to install. Note this is only supported
 in python 3.6 and higher.
 
 ```
@@ -19,7 +19,7 @@ $ virtualenv ospclientsdk
 $ source ospclientsdk/bin/activate
 
 # install blaster
-$ (ospclientsdk) pip install 
+$ (ospclientsdk) pip install ospclientsdk
 ```
 
 ## Usage
@@ -62,9 +62,8 @@ shell.load_cloud_config(cloud_dict=creds, cloud='test')
 Once the shell has been intialized you can see what command groups and commands
 are available in a couple of ways. 
 
-Note when the commands are loaded they are 
-all white spaces are replaced with underscores ('_') to make it easier
-to parse and fine what you're looking for. i.e. 
+Note when the commands are loaded the white spaces are replaced with 
+underscores ('_') to make it easier to parse and find what you're looking for. i.e. 
 *server create* to *server_create* 
 
 ```python
@@ -74,9 +73,9 @@ shell = ClientShell(cloud_file='clouds.yaml', cloud='test')
 
 
 """
-You can see a simplied version of all available command groups and their respective. Returning
-a dictionary. Where the key is the name of the of the command group and the values are a list
-of commands supported by the command group.  
+You can see a simplied version of all available command groups and their respective commands.
+This will return a dictionary. Where the key is the name of the of the command group and 
+the values are a list of commands supported by the command group.  
 """
 cmd_groups = shell.all_osp_cmd_groups
 cmd_list = cmd_groups.get('data_processing', {})
@@ -84,7 +83,7 @@ cmd_list = cmd_groups.get('data_processing', {})
 
 """
 If you already know the name of the command group you want and would like to see the 
-commands available for it. You can access one of the many command properties as a convience.
+commands available for it. You can access one of the many command group properties.
 """
 cmd_list = shell.data_processing_commands
 
@@ -154,9 +153,13 @@ results = shell.neutronclient.network_trunk_create(trunk_port_params)
 ``` 
 
 #### Mid Level API
-In certain scenarios, it's quite possible that other openstackclient plugin as been installed 
-after the shell has been initialized. You can you use a convenience method to run methods. You
-can use the **run_command** to to supply a command and the dictionary options. 
+
+You can use the **run_command** to to supply the command 
+(using the underscore version of the command) and a dictionary options and it's parameters. 
+
+This can come in handy in scenarios where it's quite possible that other openstackclient 
+plugins have been installed after the clientshell has been initialized. But you still want
+to take advantage of supplying the command options and arguments as a dictionary. 
 
 ```python
 
@@ -181,12 +184,16 @@ results = shell.run_command('network_trunk_create', trunk_port_params)
 
 #### Low Level API
 
-You can use the function **run_raw_command** to explicitly run full commands. You can pass in 
-a string directly. This commmand might be useful for new commands or if there are problems
-with normalizing the options without having to setup subprocess boilerplate code.  
+You can use the function **run_raw_command** to explicitly run full commands. This will
+allow you to pass in a string directly. 
 
-Note it's not recommended to use this function very often as it can prove unsafe since there
-isn't any string checking. 
+This commmand might be useful if there are problems
+with the clientshell normalizing the options or if you want to leverage the underlying shell to
+chain together commands and do some complex processing without having to setup 
+subprocess boilerplate code yourself.  
+
+Note since we aren't doing any string checking make sure you aren't passing in anything unsafe
+for the underlying shell to execute. Also make sure to escape your command properly. 
 ```python
 from ospclientsdk import ClientShell
 
@@ -206,7 +213,7 @@ to you a dictionary. It will contain the following keys:
 
 You can use the rc value to determine if the command passed (0) or failed (1) and how to respond to 
 either scenario. The stdout key will always be deserialized into a dictionary so that 
-it can be easily manipulated and accessed. 
+it can be easily manipulated and accessed. The stderr will typically always be a text string.
 
 .
 

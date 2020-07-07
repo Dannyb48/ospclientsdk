@@ -132,17 +132,16 @@ class ClientShell(object):
             for v in values:
                 # https://stackoverflow.com/questions/13184281/python-dynamic-function-creation-with-custom-names
                 #
-                def func1(*args, **kwargs):
+                def func(*args, **kwargs):
                     self.logger.debug(args[1])
 
-                func1.__name__ = v
-                cmd = Command(func1)
+                func.__name__ = v
+                cmd = Command(func)
                 func_dict.update({v: cmd})
 
             proxy_class = type('%sMixin' % "".join([word.capitalize() for word in key.split('_')]),
                                (object,),
                                func_dict)
-            self.logger.info(key.lower())
             setattr(self, '%s' % key.lower(), proxy_class())
 
     def is_valid_command(self, cmd):

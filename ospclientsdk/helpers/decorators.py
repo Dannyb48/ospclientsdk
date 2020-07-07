@@ -93,18 +93,18 @@ class Command(object):
         :param command: str
         :return: str
         """
-        LOG.info('command: %s' % command)
+        LOG.debug('command: %s' % command)
         resp = self.exec_local_cmd(command)
 
-        if resp['stdout']:
-            try:
-                # Let's try to deserialize into a dictionary for easier manipulation
-                data = json.loads(resp['stdout'])
-                resp['stdout'] = data
-                return resp
-            except Exception:
-                # assume it's not a json so just return the output
-                return resp
+        # if resp['stdout']:
+        try:
+            # Let's try to deserialize into a dictionary for easier manipulation
+            data = json.loads(resp['stdout'])
+            resp['stdout'] = data
+            return resp
+        except Exception:
+            # assume it's not a json so just return the output
+            return resp
 
     def _normalize_options(self, options):
         """

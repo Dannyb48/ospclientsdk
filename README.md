@@ -96,7 +96,109 @@ all_cmds = shell.all_osp_commands
 ```
 ### Executing Commands
 Once you have an idea of what commands you want to execute you have a few different ways of 
-executing them. Below we will walk through the available options
+executing them. Before we dive into those, let's talk a little bit about generating the options
+and their arguments. 
+
+### Options
+
+The options and argument values for the command actions are always defined as dictionaries. Let's
+touch on a couple examples
+
+#### Example 1
+
+Any time an option takes an argument
+```python
+
+# This
+command create --option arg <res_name>
+
+
+# Can be defined like
+{'option': 'arg', 'name': 'res_name'}
+```
+
+#### Example 2
+Any time an option takes an argument and can be specified multiple times 
+```python
+
+# This
+command create --option arg1 --option arg2 <res_name>
+
+# Can be defined like
+{'option': ['arg1', 'arg2'], 'name': 'res_name'}
+```
+
+#### Example 3
+Any time an option takes an argument with the value in k=v 
+```python
+
+# This
+command create --option arg1=val1
+
+# Can be defined like
+{'option': [{'arg1': 'val1'}], 'name': 'res_name'} 
+```
+
+#### Example 4
+Any time an option takes an argument with the value in k=v and can be specified multiple times. 
+```python
+
+# This
+command create --option arg1=val1 --option arg2=val2 <res_name>
+
+# Can be defined like
+{'option': [{'arg1': 'val1'}, {'arg2': 'val2'}], 'name': 'res_name'}
+```
+
+#### Example 5
+Any time an option takes an argument but the value can be a comma separated list of k=v 
+```python
+
+# This
+command create --option arg1=val1,arg2=val2,arg3=val3 <res_name>
+
+# Can be defined like
+{'option': [{'arg1': 'val1', 'arg2': 'val2', 'arg3': 'val3'}], 'name': 'res_name'}
+```
+
+#### Example 6
+Any time an option takes no argument and actions like a boolean flag 
+```python
+
+# This
+command create --option <res_name>
+
+# Can be defined like
+{'option': True, 'name': 'res_name'}
+```
+
+#### Example 7
+In the case of *add* command actions, which not only require the name or id of the resource
+it needs the name or id of the target resource you want to add
+```python
+
+# This
+command add --option arg1 <res_name> <tgt_res>
+
+# Can be defined like
+{'option': 'arg1', 'name': 'res_name', 'tgt_name': 'tgt_res'}
+```
+**Note** rather than `name` you could supply `id` and rather than `tgt_name` you can supply `tgt_id` 
+
+#### Example 7
+In the case of *delete* command actions, you can specify multiple resources
+```python
+
+# This
+command delete <res_name_1> <res_name_2>
+
+# Can be defined like
+{'name': ['res_name_1', 'res_name_2']}
+```
+
+
+For a full list of commands and options refer to the
+[openstackclient](https://docs.openstack.org/python-openstackclient/latest/cli/command-list.html) documentation. 
 
 #### High Level APIs
 The first and recommended way is to use the high level APIs the shell provides 

@@ -135,6 +135,10 @@ class Command(object):
         cmd_str = ""
         if isinstance(options, dict):
             asset = options.pop('name') if options.get('name', None) else options.pop('id', None)
+
+            # This most likely means it's an add command so we need to append this as the last argument
+            target = options.pop('tgt_name') if options.get('tgt_name', None) else options.pop('tgt_id', None)
+
             for key, val in options.items():
                 if isinstance(val, list):
                     for item in val:
@@ -160,7 +164,11 @@ class Command(object):
                     continue
                 cmd_str += "--%s %s " % (key.replace('_', '-'), val)
             if asset:
+                if isinstance(asset, list):
+                    asset = " ".join(asset)
                 cmd_str += asset
+            if target:
+                cmd_str += " %s" % target
         return cmd_str
 
     def exec_local_cmd(self, cmd):

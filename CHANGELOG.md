@@ -1,3 +1,24 @@
+# Version 0.3.0 (2020-07-16)
+
+## New features
+None
+
+## Enhancements
+None
+
+## Bug Fixes
+* Fix issue #7 where we could not delete multiple resources of the same type
+  and did not have a specific key to specify in the dictionary of options
+  for a target resource when doing add/remove commands.
+
+## Doc Changes
+* Updated README to have better examples of building the dictionary of command
+  options
+
+## Test/CI Enhancements
+* None
+
+
 # Version 0.2.0 (2020-07-06)
 
 ## New features

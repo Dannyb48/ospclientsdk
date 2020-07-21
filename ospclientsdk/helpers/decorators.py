@@ -12,6 +12,8 @@ import subprocess
 from logging import getLogger
 from string import Template
 from functools import update_wrapper
+from .context import cur_context
+from shlex import split
 
 LOG = getLogger(__name__)
 
@@ -24,7 +26,8 @@ class Command(object):
     this logic code in the mixin classes.
     """
 
-    generic_os_command_template = Template("openstack $command $options")
+    default_os_command_template = Template("openstack $command $options")
+    alt_remote_os_command_template = Template("$client_path/$os_command")
 
     def __init__(self, func):
         update_wrapper(self, func)
@@ -46,21 +49,22 @@ class Command(object):
         # the 'server_create(options)' function would normalize and map to 'server create'
         # on the CLI.
         if len(args) == 2 and func_name.find('raw') == -1:
-            return self.run_cmd(func_name, args[1])
+            return self.run_cmd(func_name, args[1], context=cur_context())
 
         # Assume the user is trying has called the run_raw_command function to pass in a raw
         # string of an openstack command. Either because there is an api call that
         # maps to a CLI command or a particular option and it's argument can't/hasn't been
         # normalized yet.
         elif len(args) == 2 and func_name.find('raw') != -1:
-            return self.run_cmd_raw(args[1])
+            return self.run_cmd_raw(args[1], context=cur_context())
 
         # This means run_command function in shell implementation is called because
         # user passes in the cmd as a parameter. Most likely because one of the command
         # mixin classes does not have a defined function yet that maps to a particular
         # command on the CLI.
         elif len(args) == 3:
-            return self.run_cmd(args[1], args[2])
+            LOG.info(args)
+            return self.run_cmd(args[1], args[2], context=cur_context())
 
     def __get__(self, instance, owner):
         # Refer to the second answer on why I added this
@@ -69,7 +73,7 @@ class Command(object):
         from functools import partial
         return partial(self.__call__, instance)
 
-    def run_cmd(self, cmd, options):
+    def run_cmd(self, cmd, options, context=None):
         """
         This is a higher level api command, that is used to normalize and
         join the final command to it options and parameters.
@@ -82,10 +86,12 @@ class Command(object):
         cmd = cmd.replace('_', ' ')
         if len(set(cmd.split(' ')).intersection(['create', 'list', 'show'])) != 0 and opts.find('--help') == -1:
             opts += ' -f json'
-        cmd_str = self.generic_os_command_template.safe_substitute(command=cmd, options=opts)
-        return self.run_cmd_raw(cmd_str)
+        cmd_str = self.default_os_command_template.safe_substitute(command=cmd, options=opts)
 
-    def run_cmd_raw(self, command):
+        LOG.info(cmd_str)
+        return self.run_cmd_raw(cmd_str, context)
+
+    def run_cmd_raw(self, command, context=None):
         """
         This is a lower level api command meant to pass the full
         joined cli command with it's options
@@ -94,9 +100,8 @@ class Command(object):
         :return: str
         """
         LOG.debug('command: %s' % command)
-        resp = self.exec_local_cmd(command)
+        resp = self.exec_local_cmd(command, context)
 
-        # if resp['stdout']:
         try:
             # Let's try to deserialize into a dictionary for easier manipulation
             data = json.loads(resp['stdout'])
@@ -114,10 +119,11 @@ class Command(object):
         This dictionary of arguments/options for 'server create'
 
         dict(image='rhel-7.5-server-x86_64',
-                flavor='m1.small',
-                network=['provider_net', 'private_net'],
-                max=2,
-                key_name='test-key')
+            flavor='m1.small',
+            network=['provider_net', 'private_net'],
+            max=2,
+            key_name='test-key',
+            name='test_client')
 
         is converted to:
 
@@ -171,12 +177,44 @@ class Command(object):
                 cmd_str += " %s" % target
         return cmd_str
 
-    def exec_local_cmd(self, cmd):
+    def exec_local_cmd(self, cmd, context=None):
         """Execute command locally.
 
         :param cmd: str
         :return: dict
         """
+        resp = dict()
+
+        # there is a context assume we are running commmands over
+        # ssh so we use plumbum sshmachine to easily setup the
+        # connection and auth env vars
+        if context:
+            from plumbum import SshMachine
+            with SshMachine(host=context.hostname,
+                            user=context.username,
+                            port=context.port,
+                            keyfile=context.key_file,
+                            password=context.password,
+                            ssh_opts=context.ssh_opts) as shell:
+
+                # set the local auth variables remotely
+                for k, v in context.get_os_vars().items():
+                    shell.env.update({k: v})
+
+                # if a client path assume not in PATH, we need to prefix the command
+                if context.client_path:
+                    cmd = self.alt_remote_os_command_template.safe_substitute(client_path=context.client_path,
+                                                                              os_command=cmd)
+                    LOG.debug(cmd)
+
+                # run command over ssh and return the results
+                proc = shell.popen(split(cmd))
+                output = proc.communicate()
+                resp['rc'] = proc.returncode
+                resp['stdout'] = output[0].decode('utf-8')
+                resp['stderr'] = output[1].decode('utf-8')
+                return resp
+
         proc = subprocess.Popen(
             cmd,
             shell=True,
@@ -184,7 +222,6 @@ class Command(object):
             stderr=subprocess.PIPE
         )
         output = proc.communicate()
-        resp = dict()
         resp['rc'] = proc.returncode
         resp['stdout'] = output[0].decode('utf-8')
         resp['stderr'] = output[1].decode('utf-8')

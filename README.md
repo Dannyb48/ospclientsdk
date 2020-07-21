@@ -317,5 +317,48 @@ You can use the rc value to determine if the command passed (0) or failed (1) an
 either scenario. The stdout key will always be deserialized into a dictionary so that 
 it can be easily manipulated and accessed. The stderr will typically always be a text string.
 
-.
+### Running openstack commands remotely
+
+There are use cases where it's useful to run the commands remotely on a test driver or bastion host.
+The SDK provides a `remote_shell` context that can forward all CLI commands to the desired host without 
+a lot of extra boilerplate code. Before using this context first install the necessary ssh package:
+
+```bash
+$ pip install ospclientsdk['remote_shell']
+``` 
+
+Next it's recommended you will load your ssh agent up with a key appropriate to the target client host.
+
+Then you can start using it. Below are some examples
+
+```python
+from ospclientsdk import ClientShell, remote_shell
+
+shell = ClientShell(cloud_file='clouds.yaml', cloud='test')
+
+# Build a dictionary of the required arguements/options and their parameters.
+# Each key is command option and the value is the parameter.
+server_params = dict(name="ccit_test_client",
+                     image="rhel-7.5-server-x86_64-released",
+                     flavor="m1.small",
+                     key_name="db2-test",
+                     network=["test_private_network"],
+                     wait=True
+                     )
+
+
+# Here is an example where we log into a remote host using user 'cloud-user' and a key file
+# using the high level api
+with remote_shell(hostname="10.x.x.x", username="cloud-user", key_file="keys/test-key"):
+        results = shell.compute.server_create(server_params)
+
+
+# Here is an example running raw commands to a remote host using the FQDN and 'fedora' user 
+# but we've specified a client path for where to look for the 'openstack' binary since it is
+# not in the $PATH on the remote host. This comes in useful if you've installed the client
+# in a virtualenv on the remote host.
+with remote_shell(hostname="host.example.com", username="fedora", key_file="keys/test-key", client_path="/home/fedora/cbn/bin"):
+        results = shell.run_raw_command('openstack server show -f json')
+
+```
 

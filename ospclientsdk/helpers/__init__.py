@@ -8,3 +8,4 @@
 """
 
 from .decorators import Command
+from .context import *

@@ -2,12 +2,14 @@ import pytest
 import mock
 import os
 from string import Template
-from ospclientsdk.helpers import Command
+from ospclientsdk.helpers import *
 
 
 class TestCommandDecorator(object):
 
     def exec_local_cmd(*args, **kwargs):
+        if args[2] and isinstance(args[2], SshContext):
+            return dict(rc=0, stdout=args[2].hostname)
         return dict(rc=0, stdout=dict(id=123456), stderr="err")
 
     @staticmethod
@@ -65,4 +67,23 @@ class TestCommandDecorator(object):
         cmd = Command(func=mock_run)
         cmd('server_show', options)
 
+    @staticmethod
+    @mock.patch.object(Command, 'exec_local_cmd', exec_local_cmd)
+    def test_cxt_command_call_func():
+        def mock_run(func, cmd, option):
+            print("%s %s %s" % (func.__name__, cmd, option))
 
+        with remote_shell(hostname='127.0.0.1'):
+            cmd = Command(func=mock_run)
+            r = cmd(mock_run, 'command_list', dict())
+            assert r['stdout'] == '127.0.0.1'
+
+
+class TestContext(object):
+
+    @staticmethod
+    def test_remote_shell_context():
+
+        with remote_shell(hostname='127.0.0.1'):
+            cxt = cur_context()
+            assert  cxt.hostname == '127.0.0.1'

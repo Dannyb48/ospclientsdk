@@ -11,8 +11,6 @@ __all__ = ["ClientShell"]
 
 import yaml
 import os
-import json
-import logging
 from .helpers import *
 from .exceptions import OspShellError
 from .constants import LOG_FORMAT, LOG_LEVELS, DEBUG_LOG_FORMAT

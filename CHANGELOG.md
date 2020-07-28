@@ -1,3 +1,23 @@
+# Version 0.4.0 (2020-07-28)
+
+## New features
+ * Added support for running openstack commands on a remote host
+   using a context manager. Addresses issue #11 
+
+## Enhancements
+None
+
+## Bug Fixes
+* None
+
+## Doc Changes
+* Updated README to show the examples of using the `remote_shell` context
+  manager
+
+## Test/CI Enhancements
+* Added some test coverage for the new context manager logic
+
+
 # Version 0.3.0 (2020-07-16)
 
 ## New features

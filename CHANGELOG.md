@@ -2,7 +2,7 @@
 
 ## New features
  * Added support for running openstack commands on a remote host
-   using a context manager. Addresses issue #11 
+   using a context manager. Addresses issue #6 
 
 ## Enhancements
 None

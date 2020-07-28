@@ -1,3 +1,23 @@
+# Version 0.4.1 (2020-07-28)
+
+## New features
+ * None
+
+## Enhancements
+ * None
+
+## Bug Fixes
+* Fix issue #13 where upload to pypi on release was failing due to 
+  long description change. 
+
+## Doc Changes
+* Updated the CHANGELOG.md to correct the new feature entry to point 
+  to the correct github issue.
+
+## Test/CI Enhancements
+* None
+
+
 # Version 0.4.0 (2020-07-28)
 
 ## New features

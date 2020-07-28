@@ -22,6 +22,7 @@ setup(
     version=get_version(),
     description="An SDK like wrapper around the openstackclient.",
     long_description=get_long_description(),
+    long_description_content_type='text/markdown',
     author="Danny Baez",
     url="https://github.com/Dannyb48/ospclientsdk",
     author_email='danny.baez.jr@gmail.com',

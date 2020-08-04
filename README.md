@@ -114,7 +114,7 @@ command create --option arg <res_name>
 
 
 # Can be defined like
-{'option': 'arg', 'name': 'res_name'}
+{'option': 'arg', 'res': 'res_name'}
 ```
 
 #### Example 2
@@ -125,7 +125,7 @@ Any time an option takes an argument and can be specified multiple times
 command create --option arg1 --option arg2 <res_name>
 
 # Can be defined like
-{'option': ['arg1', 'arg2'], 'name': 'res_name'}
+{'option': ['arg1', 'arg2'], 'res': 'res_name'}
 ```
 
 #### Example 3
@@ -136,7 +136,7 @@ Any time an option takes an argument with the value in k=v
 command create --option arg1=val1
 
 # Can be defined like
-{'option': [{'arg1': 'val1'}], 'name': 'res_name'} 
+{'option': [{'arg1': 'val1'}], 'res': 'res_name'} 
 ```
 
 #### Example 4
@@ -147,7 +147,7 @@ Any time an option takes an argument with the value in k=v and can be specified 
 command create --option arg1=val1 --option arg2=val2 <res_name>
 
 # Can be defined like
-{'option': [{'arg1': 'val1'}, {'arg2': 'val2'}], 'name': 'res_name'}
+{'option': [{'arg1': 'val1'}, {'arg2': 'val2'}], 'res': 'res_name'}
 ```
 
 #### Example 5
@@ -158,7 +158,7 @@ Any time an option takes an argument but the value can be a comma separated list
 command create --option arg1=val1,arg2=val2,arg3=val3 <res_name>
 
 # Can be defined like
-{'option': [{'arg1': 'val1', 'arg2': 'val2', 'arg3': 'val3'}], 'name': 'res_name'}
+{'option': [{'arg1': 'val1', 'arg2': 'val2', 'arg3': 'val3'}], 'res': 'res_name'}
 ```
 
 #### Example 6
@@ -169,7 +169,7 @@ Any time an option takes no argument and actions like a boolean flag
 command create --option <res_name>
 
 # Can be defined like
-{'option': True, 'name': 'res_name'}
+{'option': True, 'res': 'res_name'}
 ```
 
 #### Example 7
@@ -181,7 +181,7 @@ it needs the name or id of the target resource you want to add
 command add --option arg1 <res_name> <tgt_res>
 
 # Can be defined like
-{'option': 'arg1', 'name': 'res_name', 'tgt_name': 'tgt_res'}
+{'option': 'arg1', 'res': 'res_name', 'tgt_res': 'tgt_res'}
 ```
 **Note** rather than `name` you could supply `id` and rather than `tgt_name` you can supply `tgt_id` 
 
@@ -193,7 +193,7 @@ In the case of *delete* command actions, you can specify multiple resources
 command delete <res_name_1> <res_name_2>
 
 # Can be defined like
-{'name': ['res_name_1', 'res_name_2']}
+{'res': ['res_name_1', 'res_name_2']}
 ```
 
 
@@ -338,7 +338,7 @@ shell = ClientShell(cloud_file='clouds.yaml', cloud='test')
 
 # Build a dictionary of the required arguements/options and their parameters.
 # Each key is command option and the value is the parameter.
-server_params = dict(name="ccit_test_client",
+server_params = dict(res="ccit_test_client",
                      image="rhel-7.5-server-x86_64-released",
                      flavor="m1.small",
                      key_name="db2-test",

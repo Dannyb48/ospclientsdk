@@ -42,8 +42,12 @@ class TestCommandDecorator(object):
     @staticmethod
     @mock.patch.object(Command, 'exec_local_cmd', exec_local_cmd)
     def test_command_call_normalize_options():
+        final_options="""
+        --list-1 k-1=v1,k-2=v2 --list-1 k-3=v3,k-4=v4 --list-2 k-5=v5 --list-3 net1 --list-3 net2 --is-true --max 2 --p-dir /tmp --p-file /tmp/key test tgt
+        """
         options = dict(
-                    name='test',
+                    res='test',
+                    tgt_res='tgt',
                     list_1=[
                         dict(k_1='v1',
                              k_2='v2'
@@ -65,7 +69,8 @@ class TestCommandDecorator(object):
             print("%s %s" % (func, option))
 
         cmd = Command(func=mock_run)
-        cmd('server_show', options)
+        noption = getattr(cmd, '_normalize_options')(options)
+        assert noption.find(final_options)
 
     @staticmethod
     @mock.patch.object(Command, 'exec_local_cmd', exec_local_cmd)

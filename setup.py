@@ -45,6 +45,7 @@ setup(
         'PyYaml'
     ],
     extras_require={
-        'remote_shell': ['plumbum']
+        'remote_shell': ['plumbum'],
+        'tripleo': ['python-tripleoclient']
     }
 )

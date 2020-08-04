@@ -63,7 +63,6 @@ class Command(object):
         # mixin classes does not have a defined function yet that maps to a particular
         # command on the CLI.
         elif len(args) == 3:
-            LOG.info(args)
             return self.run_cmd(args[1], args[2], context=cur_context())
 
     def __get__(self, instance, owner):
@@ -88,7 +87,6 @@ class Command(object):
             opts += ' -f json'
         cmd_str = self.default_os_command_template.safe_substitute(command=cmd, options=opts)
 
-        LOG.info(cmd_str)
         return self.run_cmd_raw(cmd_str, context)
 
     def run_cmd_raw(self, command, context=None):
@@ -140,10 +138,10 @@ class Command(object):
         """
         cmd_str = ""
         if isinstance(options, dict):
-            asset = options.pop('name') if options.get('name', None) else options.pop('id', None)
+            asset = options.pop('res', None)
 
             # This most likely means it's an add command so we need to append this as the last argument
-            target = options.pop('tgt_name') if options.get('tgt_name', None) else options.pop('tgt_id', None)
+            target = options.pop('tgt_res', None)
 
             for key, val in options.items():
                 if isinstance(val, list):

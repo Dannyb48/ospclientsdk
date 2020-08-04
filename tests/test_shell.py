@@ -17,17 +17,7 @@ def flat_dict():
                 project_name='test')
 
 
-@pytest.fixture(scope='class')
-def server_create_options():
-    return dict(image='rhel-7.5-server-x86_64',
-                flavor='m1.small',
-                network=['provider_net', 'private_net'],
-                max=2,
-                key_name='test-key')
-
-
 class TestShell(object):
-
 
     @staticmethod
     def test_shell_creds_dict(clouds_dict):

@@ -6,5 +6,3 @@ pytest>=3.7.3
 #locking pytest-cov due to a regression with 2.8.0
 pytest-cov
 tox>=2.7.0
-openstackclient
-plumbum

@@ -1,3 +1,26 @@
+# Version 0.5.0 (2020-08-07)
+
+## New features
+ * None
+
+## Enhancements
+ * Added support for tripleo client as an extra package #11
+ * Changed the normalization of `name` and `tgt_name` to 
+   `res` and `tgt_res` respectivley because tripleo client
+   has a `--name` argument/option
+
+## Bug Fixes
+* None
+
+## Doc Changes
+* Updated the README.md examples that contained `name` or `tgt_name`
+  to `res` and `tgt_res`, respectively.
+
+## Test/CI Enhancements
+* Cleaned up some unnecessary fixtures that were no longer being used
+* Improved the `test_command_normalize_options` assertion
+
+
 # Version 0.4.1 (2020-07-28)
 
 ## New features

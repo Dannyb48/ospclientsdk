@@ -41,7 +41,7 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
-        'openstackclient',
+        'openstackclient==5.4.0',
         'PyYaml'
     ],
     extras_require={
